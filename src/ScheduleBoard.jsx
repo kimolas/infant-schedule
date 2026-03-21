@@ -51,8 +51,8 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
     : layoutEvents;
 
   const validateDrop = (type, resourceId) => {
-    if (type === 'PUMPING' && resourceId !== 'parent2') return false;
-    if (type === 'FEEDING_COOPER' && resourceId === 'baby') return false;
+    if (type === 'PUMPING' && resourceId === 'baby') return false;
+    if (type === 'FEEDING_PET' && resourceId === 'baby') return false;
     if (type === 'WORK' && resourceId === 'baby') return false;
     return true;
   };

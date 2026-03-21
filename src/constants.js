@@ -4,7 +4,7 @@ export const EVENT_TYPES = {
   PUMPING: { id: 'PUMPING', label: 'Pumping', color: '#ec4899' },
   FEEDING: { id: 'FEEDING', label: 'Feeding Baby', color: '#3b82f6' },
   PLAYING: { id: 'PLAYING', label: 'Playing', color: '#f59e0b' },
-  FEEDING_COOPER: { id: 'FEEDING_COOPER', label: 'Feeding Cooper', color: '#14b8a6' },
+  FEEDING_PET: { id: 'FEEDING_PET', label: 'Feeding Pet', color: '#14b8a6' },
   EATING: { id: 'EATING', label: 'Eating', color: '#f97316' },
   WORK: { id: 'WORK', label: 'Work', color: '#64748b' }
 };
