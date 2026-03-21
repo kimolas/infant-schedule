@@ -91,26 +91,26 @@ export default function App() {
     <DndProvider backend={HTML5Backend}>
       {isImporting && <ImportView onImport={handleImport} onCancel={() => setIsImporting(false)} />}
       {typicalDay && <ConfirmImportView typicalDay={typicalDay} onConfirm={confirmImport} onCancel={cancelImport} />}
-      <div className="h-screen w-screen p-4 bg-slate-200 flex flex-col font-sans">
-        <div className="flex justify-between items-center mb-4 bg-white p-3 rounded shadow-sm border border-slate-300">
+      <div className="h-screen w-screen p-4 bg-slate-200 dark:bg-slate-800 flex flex-col font-sans">
+        <div className="flex justify-between items-center mb-4 bg-white dark:bg-slate-900 p-3 rounded shadow-sm border border-slate-300 dark:border-slate-700">
           <div className="flex gap-4 items-center">
-            <h1 className="text-lg font-bold text-slate-800 mr-4">Infant Schedule Planner</h1>
+            <h1 className="text-lg font-bold text-slate-800 dark:text-slate-200 mr-4">Infant Schedule Planner</h1>
             <input 
               value={names.parent1} 
               onChange={e => setNames(n => ({...n, parent1: e.target.value}))} 
-              className="px-3 py-1.5 border border-slate-300 rounded text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 w-32 font-semibold" 
+              className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-32 font-semibold" 
               placeholder="Parent 1" 
             />
             <input 
               value={names.baby} 
               onChange={e => setNames(n => ({...n, baby: e.target.value}))} 
-              className="px-3 py-1.5 border border-slate-300 rounded text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 w-32 font-semibold" 
+              className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-32 font-semibold" 
               placeholder="Baby" 
             />
             <input 
               value={names.parent2} 
               onChange={e => setNames(n => ({...n, parent2: e.target.value}))} 
-              className="px-3 py-1.5 border border-slate-300 rounded text-sm bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500 w-32 font-semibold" 
+              className="px-3 py-1.5 border border-slate-300 dark:border-slate-700 rounded text-sm bg-slate-50 dark:bg-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 w-32 font-semibold" 
               placeholder="Parent 2" 
             />
           </div>

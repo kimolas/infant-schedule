@@ -5,6 +5,10 @@ const ImportView = ({ onImport, onCancel }) => {
   const [file, setFile] = useState(null);
   const [daysToConsider, setDaysToConsider] = useState(7);
   const [numNaps, setNumNaps] = useState(3);
+  const [overnightStart, setOvernightStart] = useState('19:00');
+  const [overnightEnd, setOvernightEnd] = useState('07:00');
+  const [napMergeThreshold, setNapMergeThreshold] = useState(30);
+
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
@@ -15,7 +19,7 @@ const ImportView = ({ onImport, onCancel }) => {
       Papa.parse(file, {
         header: true,
         complete: (results) => {
-          onImport(results.data, { daysToConsider, numNaps });
+          onImport(results.data, { daysToConsider, numNaps, overnightStart, overnightEnd, napMergeThreshold });
         },
       });
     }
@@ -58,6 +62,45 @@ const ImportView = ({ onImport, onCancel }) => {
               id="numNaps"
               value={numNaps}
               onChange={(e) => setNumNaps(parseInt(e.target.value, 10))}
+              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
+          <div className="mt-4">
+            <label htmlFor="overnightStart" className="block text-sm font-medium text-gray-700">
+              Overnight Start
+            </label>
+            <input
+              type="time"
+              name="overnightStart"
+              id="overnightStart"
+              value={overnightStart}
+              onChange={(e) => setOvernightStart(e.target.value)}
+              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
+          <div className="mt-4">
+            <label htmlFor="overnightEnd" className="block text-sm font-medium text-gray-700">
+              Overnight End
+            </label>
+            <input
+              type="time"
+              name="overnightEnd"
+              id="overnightEnd"
+              value={overnightEnd}
+              onChange={(e) => setOvernightEnd(e.target.value)}
+              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+            />
+          </div>
+          <div className="mt-4">
+            <label htmlFor="napMergeThreshold" className="block text-sm font-medium text-gray-700">
+              Nap Merge Threshold (minutes)
+            </label>
+            <input
+              type="number"
+              name="napMergeThreshold"
+              id="napMergeThreshold"
+              value={napMergeThreshold}
+              onChange={(e) => setNapMergeThreshold(parseInt(e.target.value, 10))}
               className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
             />
           </div>

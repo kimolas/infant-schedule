@@ -2,6 +2,30 @@ import { parse, format, startOfDay, getUnixTime, differenceInMinutes, addMinutes
 import { mean, std } from 'mathjs';
 import { v4 as uuidv4 } from 'uuid';
 
+const mergeNaps = (sleeps, threshold) => {
+  if (sleeps.length < 2) {
+    return sleeps;
+  }
+
+  const sortedSleeps = [...sleeps].sort((a, b) => a.start - b.start);
+  const merged = [sortedSleeps[0]];
+
+  for (let i = 1; i < sortedSleeps.length; i++) {
+    const last = merged[merged.length - 1];
+    const current = sortedSleeps[i];
+    const diff = differenceInMinutes(current.start, last.end);
+
+    if (diff <= threshold) {
+      last.end = current.end;
+    } else {
+      merged.push(current);
+    }
+  }
+
+  return merged;
+};
+
+
 // Simple clustering algorithm to group naps by time windows
 const clusterNaps = (naps) => {
   const clusters = {
@@ -52,20 +76,22 @@ export const calculateTypicalDay = (data, options) => {
 
   // Calculate typical sleep times
   const sleepEvents = recentData.flat().filter(d => d.Type === 'Sleep' && d.end);
-  
-  const napsByDay = recentData.map(day => {
-    const sleeps = day.filter(d => d.Type === 'Sleep' && d.end);
-    if (sleeps.length === 0) {
-      return { overnight: null, naps: [] };
-    }
-    sleeps.sort((a, b) => differenceInMinutes(b.end, b.start) - differenceInMinutes(a.end, a.start));
-    const overnight = sleeps[0];
-    const naps = sleeps.slice(1).sort((a,b) => a.start - b.start);
-    return { overnight, naps };
-  });
 
-  const allNaps = napsByDay.flatMap(d => d.naps);
-  const napClusters = clusterNaps(allNaps);
+  const [overnightStartHour, overnightStartMinute] = options.overnightStart.split(':').map(Number);
+  const [overnightEndHour, overnightEndMinute] = options.overnightEnd.split(':').map(Number);
+
+  const sleepsByType = sleepEvents.reduce((acc, sleep) => {
+    const hour = sleep.start.getHours();
+    if (hour >= overnightStartHour || hour < overnightEndHour) {
+      acc.overnight.push(sleep);
+    } else {
+      acc.naps.push(sleep);
+    }
+    return acc;
+  }, { overnight: [], naps: [] });
+  
+  const mergedNaps = mergeNaps(sleepsByType.naps, options.napMergeThreshold);
+  const napClusters = clusterNaps(mergedNaps);
 
   const napStats = Object.entries(napClusters).map(([name, naps]) => {
     if (naps.length === 0) return null;
@@ -78,7 +104,7 @@ export const calculateTypicalDay = (data, options) => {
     };
   }).filter(Boolean);
 
-  const overnightSleeps = napsByDay.map(d => d.overnight).filter(Boolean);
+  const overnightSleeps = sleepsByType.overnight;
   const overnightStartTimes = overnightSleeps.map(s => {
     let hour = s.start.getHours();
     if (hour < 12) hour += 24; // If start time is in the morning, it's part of the previous day's overnight
