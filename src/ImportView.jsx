@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Papa from 'papaparse';
+import { LAYOUTS } from './constants';
 
 const ImportView = ({ onImport, onCancel }) => {
   const [file, setFile] = useState(null);
@@ -8,6 +9,7 @@ const ImportView = ({ onImport, onCancel }) => {
   const [overnightStart, setOvernightStart] = useState('19:00');
   const [overnightEnd, setOvernightEnd] = useState('07:00');
   const [napMergeThreshold, setNapMergeThreshold] = useState(30);
+  const [targetLayout, setTargetLayout] = useState(LAYOUTS.NAP_3);
 
 
   const handleFileChange = (e) => {
@@ -19,7 +21,7 @@ const ImportView = ({ onImport, onCancel }) => {
       Papa.parse(file, {
         header: true,
         complete: (results) => {
-          onImport(results.data, { daysToConsider, numNaps, overnightStart, overnightEnd, napMergeThreshold });
+          onImport(results.data, { daysToConsider, numNaps, overnightStart, overnightEnd, napMergeThreshold, targetLayout });
         },
       });
     }
@@ -27,9 +29,10 @@ const ImportView = ({ onImport, onCancel }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-slate-800 dark:border-slate-700">
         <div className="mt-3 text-center">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Import Huckleberry CSV</h3>
+          <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Import Huckleberry CSV</h3>
           <div className="mt-2 px-7 py-3">
             <input type="file" accept=".csv" onChange={handleFileChange} className="text-sm text-grey-500
             file:mr-4 file:py-2 file:px-4
@@ -40,7 +43,22 @@ const ImportView = ({ onImport, onCancel }) => {
             />
           </div>
           <div className="mt-4">
-            <label htmlFor="daysToConsider" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="targetLayout" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Target Schedule
+            </label>
+            <select
+              id="targetLayout"
+              name="targetLayout"
+              value={targetLayout}
+              onChange={(e) => setTargetLayout(e.target.value)}
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+            >
+              <option value={LAYOUTS.NAP_3}>3-Nap Schedule</option>
+              <option value={LAYOUTS.NAP_4}>4-Nap Schedule</option>
+            </select>
+          </div>
+          <div className="mt-4">
+            <label htmlFor="daysToConsider" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Days to Consider for Typical Day
             </label>
             <input
@@ -49,11 +67,11 @@ const ImportView = ({ onImport, onCancel }) => {
               id="daysToConsider"
               value={daysToConsider}
               onChange={(e) => setDaysToConsider(parseInt(e.target.value, 10))}
-              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-md"
             />
           </div>
           <div className="mt-4">
-            <label htmlFor="numNaps" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="numNaps" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Number of Naps
             </label>
             <input
@@ -62,11 +80,11 @@ const ImportView = ({ onImport, onCancel }) => {
               id="numNaps"
               value={numNaps}
               onChange={(e) => setNumNaps(parseInt(e.target.value, 10))}
-              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-md"
             />
           </div>
           <div className="mt-4">
-            <label htmlFor="overnightStart" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="overnightStart" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Overnight Start
             </label>
             <input
@@ -75,11 +93,11 @@ const ImportView = ({ onImport, onCancel }) => {
               id="overnightStart"
               value={overnightStart}
               onChange={(e) => setOvernightStart(e.target.value)}
-              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-md"
             />
           </div>
           <div className="mt-4">
-            <label htmlFor="overnightEnd" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="overnightEnd" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Overnight End
             </label>
             <input
@@ -88,11 +106,11 @@ const ImportView = ({ onImport, onCancel }) => {
               id="overnightEnd"
               value={overnightEnd}
               onChange={(e) => setOvernightEnd(e.target.value)}
-              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-md"
             />
           </div>
           <div className="mt-4">
-            <label htmlFor="napMergeThreshold" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="napMergeThreshold" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Nap Merge Threshold (minutes)
             </label>
             <input
@@ -101,7 +119,7 @@ const ImportView = ({ onImport, onCancel }) => {
               id="napMergeThreshold"
               value={napMergeThreshold}
               onChange={(e) => setNapMergeThreshold(parseInt(e.target.value, 10))}
-              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
+              className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-slate-700 dark:bg-slate-900 dark:text-white rounded-md"
             />
           </div>
           <div className="items-center px-4 py-3">

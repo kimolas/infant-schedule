@@ -3,7 +3,6 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import ScheduleBoard from './ScheduleBoard';
 import ImportView from './ImportView';
-import ConfirmImportView from './ConfirmImportView';
 import { useScheduleData, useResourceNames, useLayoutNames } from './useScheduleData';
 import { LAYOUTS } from './constants';
 import { calculateTypicalDay } from './huckleberryImporter';
@@ -13,11 +12,11 @@ export default function App() {
   const [names, setNames] = useResourceNames();
   const [layoutNames, setLayoutNames] = useLayoutNames();
   const [isImporting, setIsImporting] = useState(false);
-  const [typicalDay, setTypicalDay] = useState(null);
   const [eventsBackup, setEventsBackup] = useState(null);
+  const hasPreview = events.some(e => e.status === 'preview');
 
   const handleShare = () => {
-    const payload = btoa(encodeURIComponent(JSON.stringify(events)));
+    const payload = btoa(encodeURIComponent(JSON.stringify(events.filter(e => e.status !== 'preview'))));
     const url = `${window.location.origin}${window.location.pathname}?share=${payload}`;
     navigator.clipboard.writeText(url);
     alert('Shareable link copied to clipboard.');
@@ -25,18 +24,17 @@ export default function App() {
 
   const handleImport = (data, options) => {
     setEventsBackup(events);
-    const typicalDay = calculateTypicalDay(data, options);
-    setTypicalDay(typicalDay);
+    const typicalDay = calculateTypicalDay(data, options).map(e => ({ ...e, layout: options.targetLayout, status: 'preview' }));
+    setEvents(prev => [...prev.filter(e => e.layout !== options.targetLayout), ...typicalDay]);
     setIsImporting(false);
   };
 
   const confirmImport = () => {
-    setEvents(typicalDay);
-    setTypicalDay(null);
+    setEvents(prev => prev.map(e => e.status === 'preview' ? { ...e, status: 'confirmed' } : e));
   };
 
   const cancelImport = () => {
-    setTypicalDay(null);
+    setEvents(eventsBackup);
     setEventsBackup(null);
   };
 
@@ -90,7 +88,6 @@ export default function App() {
   return (
     <DndProvider backend={HTML5Backend}>
       {isImporting && <ImportView onImport={handleImport} onCancel={() => setIsImporting(false)} />}
-      {typicalDay && <ConfirmImportView typicalDay={typicalDay} onConfirm={confirmImport} onCancel={cancelImport} />}
       <div className="h-screen w-screen p-4 bg-slate-200 dark:bg-slate-800 flex flex-col font-sans">
         <div className="flex justify-between items-center mb-4 bg-white dark:bg-slate-900 p-3 rounded shadow-sm border border-slate-300 dark:border-slate-700">
           <div className="flex gap-4 items-center">
@@ -115,7 +112,23 @@ export default function App() {
             />
           </div>
           <div className="flex gap-4 items-center">
-            {eventsBackup && (
+            {hasPreview && (
+              <>
+                <button 
+                  onClick={confirmImport}
+                  className="px-4 py-2 bg-green-600 text-white rounded text-sm font-bold hover:bg-green-700 transition-colors shadow-sm"
+                >
+                  Confirm Import
+                </button>
+                <button 
+                  onClick={cancelImport}
+                  className="px-4 py-2 bg-red-600 text-white rounded text-sm font-bold hover:bg-red-700 transition-colors shadow-sm"
+                >
+                  Cancel Import
+                </button>
+              </>
+            )}
+            {eventsBackup && !hasPreview && (
               <button 
                 onClick={undoImport}
                 className="px-4 py-2 bg-red-600 text-white rounded text-sm font-bold hover:bg-red-700 transition-colors shadow-sm"

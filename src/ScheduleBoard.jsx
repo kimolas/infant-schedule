@@ -87,7 +87,7 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
     const { start, end, resourceId } = modalState.slotInfo;
     
     if (validateDrop(type, resourceId)) {
-      setEvents(prev => [...prev, { id: uuidv4(), start, end, resourceId, type, layout, title: EVENT_TYPES[type].label }]);
+      setEvents(prev => [...prev, { id: uuidv4(), start, end, resourceId, type, layout, title: EVENT_TYPES[type].label, status: 'confirmed' }]);
     } else {
       alert(`Invalid activity assignment for ${resourceId}.`);
     }
@@ -153,6 +153,14 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
             event: CustomEvent,
           }}
           eventPropGetter={(event) => {
+            if (event.status === 'preview') {
+              return {
+                style: {
+                  backgroundColor: 'rgba(100, 116, 139, 0.5)',
+                  border: '2px dashed #64748b',
+                }
+              }
+            }
             if (event.type === 'PENDING') {
               return {
                 style: {
@@ -168,7 +176,7 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
             }
             return {
               style: { 
-                backgroundColor: EVENT_TYPES[event.type]?.color, 
+                backgroundColor: event.type ? EVENT_TYPES[event.type]?.color : '#64748b', 
                 border: 'none',
                 borderRadius: '2px',
                 color: '#fff', 
@@ -188,7 +196,7 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
               .filter(([_, mins]) => mins > 0)
               .map(([type, mins]) => (
                 <div key={type} className="flex justify-between">
-                  <span>{EVENT_TYPES[type].label}</span>
+                  <span>{EVENT_TYPES[type]?.label || type}</span>
                   <span className="font-mono">{formatMinutes(mins)}</span>
                 </div>
               ))}
