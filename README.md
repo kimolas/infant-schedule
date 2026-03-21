@@ -1,16 +1,42 @@
-# React + Vite
+# Infant Schedule Planner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React-based web application for managing infant routines and caretaker responsibilities.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+* **Multi-Entity Tracking:** Three-column vertical timeline assigning distinct activities to specific entities. Custom nomenclature supported.
+* **Layout Comparison:** Side-by-side execution of different routine structures (e.g., 3-nap vs. 4-nap schedules) with synchronized scrolling.
+* **Drag-and-Drop Interaction:** Granular 15-minute interval scheduling with strictly validated drop targets based on activity constraints.
+* **Dynamic Aggregation:** Real-time computation of total durations per activity type, partitioned by entity.
+* **State Persistence:** Automatic local storage synchronization.
+* **Stateless Sharing:** URL parameter serialization via Base64 encoding for cross-device template transfer.
 
-## React Compiler
+## Technology Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **Framework:** React (Vite)
+* **Styling:** Tailwind CSS v4 (PostCSS)
+* **Calendar Engine:** `react-big-calendar` with `react-dnd` (HTML5 Backend)
+* **Date Operations:** `date-fns`
 
-## Expanding the ESLint configuration
+## Installation
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1.  Clone repository.
+2.  Install dependencies:
+    ```bash
+    npm install
+    ```
+3.  Execute development server:
+    ```bash
+    npm run dev -- --host
+    ```
+4.  Compile for production deployment (requires relative base path in `vite.config.js` for static hosting environments):
+    ```bash
+    npm run build
+    ```
+
+## Core Architecture
+
+* **Event Schema:** Flat state array. Objects define `id`, `start`, `end`, `type`, `resourceId`, and `layout`.
+* **Time Normalization:** Application engine shifts all stored timestamp data to align with the current execution date upon initialization. Functions as an invariant daily template.
+* **Constraint Validation:** Pre-computation interception logic prevents invalid state assignments (e.g., `WORK` cannot be assigned to the infant column).
+* **DOM Event Handling:** Scroll synchronization bypasses React synthetic events, attaching directly to native browser scroll listeners to prevent render loops.
