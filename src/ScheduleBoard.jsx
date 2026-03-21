@@ -120,12 +120,12 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
   const totals = calculateTotals(events, layout, resources);
 
   return (
-    <div id={id} className="flex flex-col h-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm overflow-hidden relative" onMouseUpCapture={handleMouseUp}>
-      <div className="flex justify-center font-bold py-2 bg-slate-100 dark:bg-slate-800 border-b border-slate-300 dark:border-slate-700 z-10">
+    <div id={id} className="flex flex-col h-full border border-slate-300 bg-white shadow-sm overflow-hidden relative" onMouseUpCapture={handleMouseUp}>
+      <div className="flex justify-center font-bold py-2 bg-slate-100 border-b border-slate-300 z-10">
         <input
           value={title}
           onChange={onTitleChange}
-          className="text-center bg-transparent focus:bg-white dark:focus:bg-slate-700 px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-800 dark:text-slate-200 w-3/4"
+          className="text-center bg-transparent focus:bg-white px-2 py-1 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-800 w-3/4"
           placeholder="Schedule Name"
         />
       </div>
@@ -188,11 +188,12 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
         />
       </div>
 
-      <div className="bg-slate-50 dark:bg-slate-800 border-t border-slate-300 dark:border-slate-700 p-3 grid grid-cols-3 gap-4 text-xs z-10">
+      <div className="bg-slate-50 border-t border-slate-300 p-3 grid grid-cols-3 gap-4 text-xs z-10">
         {resources.map(r => (
-          <div key={r.id} className="flex flex-col gap-1 text-slate-800 dark:text-slate-200">
-            <span className="font-bold border-b border-slate-200 dark:border-slate-700 pb-1 mb-1">{r.title} Totals</span>
+          <div key={r.id} className="flex flex-col gap-1 text-slate-800">
+            <span className="font-bold border-b border-slate-200 pb-1 mb-1">{r.title} Totals</span>
             {Object.entries(totals[r.id])
+              // eslint-disable-next-line no-unused-vars
               .filter(([_, mins]) => mins > 0)
               .map(([type, mins]) => (
                 <div key={type} className="flex justify-between">
@@ -211,11 +212,11 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
             onClick={() => setModalState({ isOpen: false, slotInfo: null, pendingEvent: null, position: { x: 0, y: 0 } })}
           ></div>
           <div 
-            className="fixed z-50 bg-white dark:bg-slate-800 p-4 rounded-lg shadow-2xl border border-slate-200 dark:border-slate-700 w-80"
+            className="fixed z-50 bg-white p-4 rounded-lg shadow-2xl border border-slate-200 w-80"
             style={{ left: `${modalState.position.x}px`, top: `${modalState.position.y}px` }}
           >
-            <div className="font-bold mb-1 border-b pb-2 text-slate-800 dark:text-slate-200">Select Activity</div>
-            <div className="text-sm font-mono text-slate-600 dark:text-slate-400 mb-4 text-center bg-slate-100 dark:bg-slate-700 p-1 rounded">
+            <div className="font-bold mb-1 border-b pb-2 text-slate-800">Select Activity</div>
+            <div className="text-sm font-mono text-slate-600 mb-4 text-center bg-slate-100 p-1 rounded">
               {format(modalState.slotInfo.start, 'h:mm a')} - {format(modalState.slotInfo.end, 'h:mm a')}
             </div>
             <div className="grid grid-cols-2 gap-2">

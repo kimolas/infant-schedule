@@ -31,8 +31,8 @@ export function useScheduleData() {
         const parsed = JSON.parse(decodeURIComponent(atob(sharedData)));
         window.history.replaceState({}, document.title, window.location.pathname);
         return normalizeEventsToToday(parsed);
-      } catch (e) {
-        console.error('Failed to parse shared data payload.');
+      } catch (error) {
+        console.error('Failed to parse shared data payload.', error);
       }
     }
 

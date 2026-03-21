@@ -1,5 +1,5 @@
-import { parse, format, startOfDay, getUnixTime, differenceInMinutes, addMinutes, isAfter } from 'date-fns';
-import { mean, std } from 'mathjs';
+import { parse, format, startOfDay, differenceInMinutes, addMinutes, isAfter } from 'date-fns';
+import { mean } from 'mathjs';
 import { v4 as uuidv4 } from 'uuid';
 
 const mergeNaps = (sleeps, threshold) => {
@@ -77,8 +77,8 @@ export const calculateTypicalDay = (data, options) => {
   // Calculate typical sleep times
   const sleepEvents = recentData.flat().filter(d => d.Type === 'Sleep' && d.end);
 
-  const [overnightStartHour, overnightStartMinute] = options.overnightStart.split(':').map(Number);
-  const [overnightEndHour, overnightEndMinute] = options.overnightEnd.split(':').map(Number);
+  const [overnightStartHour] = options.overnightStart.split(':').map(Number);
+  const [overnightEndHour] = options.overnightEnd.split(':').map(Number);
 
   const sleepsByType = sleepEvents.reduce((acc, sleep) => {
     const hour = sleep.start.getHours();
@@ -121,7 +121,7 @@ export const calculateTypicalDay = (data, options) => {
   const today = startOfDay(new Date());
 
   // Add naps to typical day
-  napStats.forEach((nap, i) => {
+  napStats.forEach((nap) => {
     const start = addMinutes(today, nap.start);
     const end = addMinutes(start, nap.duration);
     typicalEvents.push({
