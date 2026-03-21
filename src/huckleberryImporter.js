@@ -1,6 +1,28 @@
-import { parse, format, startOfDay, getUnixTime, differenceInMinutes, addMinutes } from 'date-fns';
+import { parse, format, startOfDay, getUnixTime, differenceInMinutes, addMinutes, isAfter } from 'date-fns';
 import { mean, std } from 'mathjs';
 import { v4 as uuidv4 } from 'uuid';
+
+// Simple clustering algorithm to group naps by time windows
+const clusterNaps = (naps) => {
+  const clusters = {
+    'Morning Nap': [],
+    'Afternoon Nap': [],
+    'Evening Nap': [],
+  };
+
+  naps.forEach(nap => {
+    const hour = nap.start.getHours();
+    if (hour >= 7 && hour < 12) {
+      clusters['Morning Nap'].push(nap);
+    } else if (hour >= 12 && hour < 17) {
+      clusters['Afternoon Nap'].push(nap);
+    } else if (hour >= 17 && hour < 21) {
+      clusters['Evening Nap'].push(nap);
+    }
+  });
+
+  return clusters;
+};
 
 export const calculateTypicalDay = (data, options) => {
   const relevantData = data.filter(d => (d.Type === 'Sleep' || d.Type === 'Feed') && d.Start);
@@ -42,21 +64,26 @@ export const calculateTypicalDay = (data, options) => {
     return { overnight, naps };
   });
 
-  const napStats = [];
-  for (let i = 0; i < options.numNaps; i++) {
-    const naps = napsByDay.map(d => d.naps[i]).filter(Boolean);
-    if (naps.length > 0) {
-      const startTimes = naps.map(n => (n.start.getHours() * 60) + n.start.getMinutes());
-      const durations = naps.map(n => differenceInMinutes(n.end, n.start));
-      napStats.push({
-        start: mean(startTimes),
-        duration: mean(durations),
-      });
-    }
-  }
+  const allNaps = napsByDay.flatMap(d => d.naps);
+  const napClusters = clusterNaps(allNaps);
+
+  const napStats = Object.entries(napClusters).map(([name, naps]) => {
+    if (naps.length === 0) return null;
+    const startTimes = naps.map(n => (n.start.getHours() * 60) + n.start.getMinutes());
+    const durations = naps.map(n => differenceInMinutes(n.end, n.start));
+    return {
+      name,
+      start: mean(startTimes),
+      duration: mean(durations),
+    };
+  }).filter(Boolean);
 
   const overnightSleeps = napsByDay.map(d => d.overnight).filter(Boolean);
-  const overnightStartTimes = overnightSleeps.map(s => (s.start.getHours() * 60) + s.start.getMinutes());
+  const overnightStartTimes = overnightSleeps.map(s => {
+    let hour = s.start.getHours();
+    if (hour < 12) hour += 24; // If start time is in the morning, it's part of the previous day's overnight
+    return (hour * 60) + s.start.getMinutes();
+  });
   const overnightEndTimes = overnightSleeps.map(s => (s.end.getHours() * 60) + s.end.getMinutes());
   
   const overnightStats = {
@@ -73,16 +100,29 @@ export const calculateTypicalDay = (data, options) => {
     const end = addMinutes(start, nap.duration);
     typicalEvents.push({
       id: uuidv4(),
-      title: `Nap ${i + 1}`,
+      title: nap.name,
       start,
       end,
       resourceId: 'baby',
     });
   });
-
+  
   // Add overnight sleep to typical day
-  const overnightStart = addMinutes(today, overnightStats.start);
-  const overnightEnd = addMinutes(today, overnightStats.end);
+  let overnightStart = addMinutes(today, overnightStats.start);
+  let overnightEnd = addMinutes(today, overnightStats.end);
+
+  if (isAfter(overnightStart, overnightEnd)) {
+    overnightStart = addMinutes(overnightStart, -24 * 60);
+  }
+
+  // Check for overlap with first nap
+  if (napStats.length > 0) {
+    const firstNapStart = addMinutes(today, napStats[0].start);
+    if (isAfter(overnightEnd, firstNapStart)) {
+      overnightEnd = firstNapStart;
+    }
+  }
+
   typicalEvents.push({
     id: uuidv4(),
     title: 'Overnight Sleep',
@@ -97,7 +137,7 @@ export const calculateTypicalDay = (data, options) => {
   });
 
   const feedStats = [];
-  const numFeeds = options.numNaps + 1;
+  const numFeeds = options.numNaps + 2; // Usually one more feed than naps
   for (let i = 0; i < numFeeds; i++) {
     const feeds = feedsByDay.map(d => d[i]).filter(Boolean);
     if (feeds.length > 0) {
@@ -121,5 +161,5 @@ export const calculateTypicalDay = (data, options) => {
     });
   });
 
-  return typicalEvents;
+  return typicalEvents.sort((a,b) => a.start - b.start);
 };

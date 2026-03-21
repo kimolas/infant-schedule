@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import withDragAndDropPkg from "react-big-calendar/lib/addons/dragAndDrop";
-import { format, parse, startOfWeek, getDay } from "date-fns";
+import { format, parse, startOfWeek, getDay, differenceInMinutes } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { v4 as uuidv4 } from "uuid";
 import { EVENT_TYPES } from "./constants";
@@ -21,6 +21,25 @@ const localizer = dateFnsLocalizer({
 const withDragAndDrop = withDragAndDropPkg.default || withDragAndDropPkg;
 const DnDCalendar = withDragAndDrop(Calendar);
 const baseDate = new Date();
+
+const CustomEvent = ({ event }) => {
+  if (event.type === 'PENDING') {
+    return <div>{event.title}</div>;
+  }
+
+  const duration = differenceInMinutes(event.end, event.start);
+  const hours = Math.floor(duration / 60);
+  const minutes = duration % 60;
+  const formattedDuration = `${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m` : ''}`;
+
+  return (
+    <div>
+      <strong>{event.title}</strong>
+      {duration > 0 && <div className="text-xs">{formattedDuration}</div>}
+    </div>
+  );
+};
+
 
 export default function ScheduleBoard({ id, layout, events, setEvents, resources, title, onTitleChange }) {
   const [modalState, setModalState] = useState({ isOpen: false, slotInfo: null, pendingEvent: null, position: { x: 0, y: 0 } });
@@ -130,6 +149,9 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
           onEventDrop={handleEventDrop}
           onEventResize={handleEventResize}
           onSelectEvent={handleDelete}
+          components={{
+            event: CustomEvent,
+          }}
           eventPropGetter={(event) => {
             if (event.type === 'PENDING') {
               return {
