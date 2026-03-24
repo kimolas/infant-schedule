@@ -32,9 +32,19 @@ const CustomEvent = ({ event }) => {
   const minutes = duration % 60;
   const formattedDuration = `${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m` : ''}`;
 
+  const title = event.title || EVENT_TYPES[event.type]?.label;
+
+  if (duration <= 30) {
+    return (
+      <div className="text-xs overflow-hidden truncate whitespace-nowrap">
+        <strong>{title}</strong>{formattedDuration && <span className="text-slate-200"> ({formattedDuration})</span>}
+      </div>
+    );
+  }
+
   return (
     <div>
-      <strong>{event.title}</strong>
+      <strong>{title}</strong>
       {duration > 0 && <div className="text-xs">{formattedDuration}</div>}
     </div>
   );

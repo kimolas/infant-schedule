@@ -10,6 +10,6 @@ export const EVENT_TYPES = {
 };
 
 export const LAYOUTS = {
-  NAP_3: '3_NAP',
-  NAP_4: '4_NAP'
+  LEFT: 'LEFT',
+  RIGHT: 'RIGHT'
 };

@@ -69,7 +69,7 @@ export function useLayoutNames() {
   const [names, setNames] = useState(() => {
     const saved = localStorage.getItem('infant_schedule_layouts');
     if (saved) return JSON.parse(saved);
-    return { nap3: '3-Nap Schedule', nap4: '4-Nap Schedule' };
+    return { left: 'Left Schedule', right: 'Right Schedule' };
   });
 
   useEffect(() => {

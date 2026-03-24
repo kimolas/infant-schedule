@@ -153,21 +153,21 @@ export default function App() {
         <div className="flex-grow grid grid-cols-2 gap-4 min-h-0">
           <ScheduleBoard 
             id="calendar-left" 
-            layout={LAYOUTS.NAP_3} 
+            layout={LAYOUTS.LEFT} 
             events={events} 
             setEvents={setEvents} 
             resources={resources} 
-            title={layoutNames.nap3}
-            onTitleChange={e => setLayoutNames(n => ({...n, nap3: e.target.value}))}
+            title={layoutNames.left}
+            onTitleChange={e => setLayoutNames(n => ({...n, left: e.target.value}))}
           />
           <ScheduleBoard 
             id="calendar-right" 
-            layout={LAYOUTS.NAP_4} 
+            layout={LAYOUTS.RIGHT} 
             events={events} 
             setEvents={setEvents} 
             resources={resources}
-            title={layoutNames.nap4}
-            onTitleChange={e => setLayoutNames(n => ({...n, nap4: e.target.value}))}
+            title={layoutNames.right}
+            onTitleChange={e => setLayoutNames(n => ({...n, right: e.target.value}))}
           />
         </div>
       </div>

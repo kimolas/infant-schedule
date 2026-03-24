@@ -9,7 +9,7 @@ const ImportView = ({ onImport, onCancel }) => {
   const [overnightStart, setOvernightStart] = useState('19:00');
   const [overnightEnd, setOvernightEnd] = useState('07:00');
   const [napMergeThreshold, setNapMergeThreshold] = useState(30);
-  const [targetLayout, setTargetLayout] = useState(LAYOUTS.NAP_3);
+  const [targetLayout, setTargetLayout] = useState(LAYOUTS.LEFT);
 
 
   const handleFileChange = (e) => {
@@ -52,8 +52,8 @@ const ImportView = ({ onImport, onCancel }) => {
               onChange={(e) => setTargetLayout(e.target.value)}
               className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
             >
-              <option value={LAYOUTS.NAP_3}>3-Nap Schedule</option>
-              <option value={LAYOUTS.NAP_4}>4-Nap Schedule</option>
+              <option value={LAYOUTS.LEFT}>Left Schedule</option>
+              <option value={LAYOUTS.RIGHT}>Right Schedule</option>
             </select>
           </div>
           <div className="mt-4">
