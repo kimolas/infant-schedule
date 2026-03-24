@@ -163,17 +163,21 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
             event: CustomEvent,
           }}
           eventPropGetter={(event) => {
+            const duration = differenceInMinutes(event.end, event.start);
+            const p = { style: {}, className: '' };
+            if (duration <= 30) {
+              p.className = 'short-event';
+            }
+
             if (event.status === 'preview') {
-              return {
-                style: {
+              p.style = {
                   backgroundColor: 'rgba(100, 116, 139, 0.5)',
                   border: '2px dashed #64748b',
-                }
-              }
+                };
+              return p;
             }
             if (event.type === 'PENDING') {
-              return {
-                style: {
+              p.style = {
                   backgroundColor: 'rgba(59, 130, 246, 0.1)',
                   border: '2px dashed #3b82f6',
                   color: '#1d4ed8',
@@ -181,19 +185,19 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
                   fontSize: '0.75rem',
                   fontWeight: '600',
                   pointerEvents: 'none'
-                }
-              };
+                };
+              return p;
             }
-            return {
-              style: { 
+            
+            p.style = { 
                 backgroundColor: event.type ? EVENT_TYPES[event.type]?.color : '#64748b', 
                 border: 'none',
                 borderRadius: '2px',
                 color: '#fff', 
                 fontSize: '0.75rem',
                 fontWeight: '500'
-              }
-            };
+              };
+            return p;
           }}
         />
       </div>

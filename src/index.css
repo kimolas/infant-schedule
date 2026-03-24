@@ -8,3 +8,23 @@ html, body, #root {
 .rbc-time-content {
   border-top: 1px solid #e5e7eb;
 }
+
+.short-event .rbc-event-content {
+  display: flex !important;
+  align-items: center !important;
+  height: 100% !important;
+}
+
+.short-event .rbc-event-label {
+  display: none !important;
+}
+
+.short-event strong {
+  font-size: 0.7rem !important;
+  line-height: 1 !important;
+}
+
+.short-event .text-xs {
+  font-size: 0.7rem !important;
+  line-height: 1 !important;
+}
