@@ -1,5 +1,4 @@
 export const EVENT_TYPES = {
-  FREE: { id: 'FREE', label: 'Free', color: '#9ca3af' },
   ASLEEP: { id: 'ASLEEP', label: 'Asleep', color: '#1e3a8a' },
   PUMPING: { id: 'PUMPING', label: 'Pumping', color: '#ec4899' },
   FEEDING: { id: 'FEEDING', label: 'Feeding Baby', color: '#3b82f6' },

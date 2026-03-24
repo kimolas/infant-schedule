@@ -6,15 +6,27 @@ export function calculateTotals(events, layout, resources) {
   resources.forEach(r => {
     totals[r.id] = {};
     Object.keys(EVENT_TYPES).forEach(type => totals[r.id][type] = 0);
+    totals[r.id].FREE = 0;
+  });
+
+  let totalMinutes = {};
+  resources.forEach(r => {
+    totalMinutes[r.id] = 0;
   });
 
   events.filter(e => e.layout === layout).forEach(event => {
     if (totals[event.resourceId] && totals[event.resourceId][event.type] !== undefined) {
-      totals[event.resourceId][event.type] += differenceInMinutes(
+      const duration = differenceInMinutes(
         new Date(event.end), 
         new Date(event.start)
       );
+      totals[event.resourceId][event.type] += duration;
+      totalMinutes[event.resourceId] += duration;
     }
+  });
+
+  resources.forEach(r => {
+    totals[r.id].FREE = 1440 - totalMinutes[r.id];
   });
 
   return totals;

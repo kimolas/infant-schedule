@@ -211,7 +211,7 @@ export default function ScheduleBoard({ id, layout, events, setEvents, resources
               .filter(([_, mins]) => mins > 0)
               .map(([type, mins]) => (
                 <div key={type} className="flex justify-between">
-                  <span>{EVENT_TYPES[type]?.label || type}</span>
+                  <span>{type === 'FREE' ? 'Free' : EVENT_TYPES[type]?.label || type}</span>
                   <span className="font-mono">{formatMinutes(mins)}</span>
                 </div>
               ))}
