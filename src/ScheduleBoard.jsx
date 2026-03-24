@@ -36,7 +36,7 @@ const CustomEvent = ({ event }) => {
 
   if (duration <= 30) {
     return (
-      <div className="text-xs overflow-hidden truncate whitespace-nowrap">
+      <div className="text-xs">
         <strong>{title}</strong>{formattedDuration && <span className="text-slate-200"> ({formattedDuration})</span>}
       </div>
     );
